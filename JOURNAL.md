@@ -8,6 +8,91 @@ private or employer repositories here — this repository is public.
 
 ---
 
+## 2026-09-28 — Research and milestone 1 of `system1-audit`
+
+**Type:** research + new project · **Branch:** `claude/portfolio-management-hub`
+(this entry only). The project's own branch,
+`claude/system1-audit-milestone-1`, exists **locally only** and was not
+pushed, because its repository could not be created.
+
+**What was done**
+
+Researched the "System-1" typed decision model class that appeared in
+September 2026, then built and tested milestone 1 of an audit harness for it.
+
+Sources checked on 2026-09-28:
+
+- <https://github.com/NandhaKishorM/laya> — retrieved and read. Apache-2.0.
+  Non-autoregressive encoder checkpoints (421M / 322M). Self-reported latency
+  32.8 ms single-question multilingual on a Tesla T4. Self-reported
+  calibration: ECE 0.213 English and 0.314 multilingual **raw**, 0.081 and
+  0.106 after temperature fitting. Its own stated limitations include
+  near-chance zero-shot typed-decision accuracy for base checkpoints and that
+  the `noul` primitive can follow option labels instead of state content.
+- TypeSafe AI's Jev announcement, Tom's Hardware, MarkTechPost, Analytics
+  India Magazine and arXiv:2609.30454 — **all blocked** by the session's
+  network egress policy and therefore **not read**. Claims attributed to Jev
+  in the project's notes are recorded as second-hand search summaries, not as
+  retrieved sources.
+
+The harness measures raw and post-fit calibration, option-order sensitivity,
+and selective-prediction coverage at a fixed error budget. 1,307 lines of
+Python, no third-party dependencies, Apache-2.0 with a NOTICE file.
+
+**Verified before commit**
+
+- 55 unit tests pass. Metric values are asserted against hand-computed
+  numbers, not against the implementation's own output.
+- The harness is validated against a synthetic decider with deliberately
+  planted defects, so a test can assert it recovers a bias injected on
+  purpose. Injected first-position weight of 0.9 is recovered as measured
+  position bias of 0.9 against a 0.25 uniform.
+- Suite and demo output are byte-identical under `PYTHONHASHSEED=1` and
+  `PYTHONHASHSEED=999`, confirming audits reproduce across processes.
+- Two defects found and fixed before the commit: the synthetic decider seeded
+  from `hash()` of strings, which is salted per interpreter run and would have
+  made audits irreproducible; and the dataset audit re-querying the model to
+  compute position bias, doubling inference calls against a real model.
+- Scanned the tree for credentials, personal or employer identifiers and
+  generated files. No matches. The commit author is `Abhijith V S` with a
+  GitHub noreply address, so no personal or employer email enters public
+  history.
+
+**Honest limitations recorded in the project**
+
+No real model has been audited; every number in the demo describes the
+harness, not any product. Only the `choice` primitive is implemented. No
+vendor adapter was written, because the package's call signature could not be
+verified from this environment and a guessed adapter would present untested
+code as a tested integration. arXiv:2609.30454 may be prior art for the entire
+premise and must be read before any public novelty claim.
+
+**Blocked**
+
+The account owner approved creating `abhijithvs680/system1-audit`, choosing
+Apache-2.0, and pushing the review branch. Two independent authorisation
+limits prevented the first and third:
+
+- `POST /user/repos` returned `403 Resource not accessible by integration`.
+- `git push --dry-run` to the intended URL was refused by the git proxy:
+  the repository is not in the session's authorised set, so no credential is
+  injected.
+
+One attempt each, no workaround attempted. The repository must be created by
+the account owner and added to the automation's authorised repository set
+before any run can push to it.
+
+**Not done**
+
+No merge, pull request, issue, comment, discussion, release or tag. No
+repository was created, deleted, archived, renamed or transferred. No
+settings, visibility, default branch, security configuration, access or
+billing were changed. No fork, star, follow or contact with any third-party
+maintainer. Nothing outside `abhijithvs680/abhijithvs680` was written to, and
+only the review branch was pushed there.
+
+---
+
 ## 2026-09-26 — Create portfolio management hub
 
 **Type:** documentation · **Branch:** `claude/portfolio-management-hub`

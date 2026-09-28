@@ -22,6 +22,56 @@ in review, done.
 
 ---
 
+## Active research project
+
+Read this section first. A run that finds an unfinished active research
+project continues it rather than starting something newer.
+
+### `system1-audit` — audit harness for typed decision models
+
+**Status:** milestone 1 complete and tested locally; **not yet published**.
+**Branch:** `claude/system1-audit-milestone-1` (local only — see blocker).
+
+A dependency-free harness that measures three properties of "System-1" typed
+decision models — models returning a typed, probabilistic answer in one
+forward pass instead of generating text:
+
+1. calibration, reported raw as well as post-temperature-fit
+2. option-order sensitivity of `choice` answers
+3. selective prediction: coverage at a fixed error budget
+
+Motivated by the open Apache-2.0 Laya README, which self-reports raw ECE of
+0.213 (English) and 0.314 (multilingual) falling to 0.081 / 0.106 only after
+temperature fitting, and notes that its `noul` primitive can follow option
+labels rather than state content.
+
+**Blocker.** The repository does not exist and could not be created from an
+agent session: `POST /user/repos` returns `403 Resource not accessible by
+integration`, and the git proxy declines to inject a credential for a
+repository outside the session's authorised set. Both need the account owner.
+
+| # | Milestone | Status |
+|---|---|---|
+| 1 | Dependency-free metric layer; tests validating it against planted defects | done, 55 tests passing, unpublished |
+| 2 | Adapter for an open checkpoint; needs a GPU or patient CPU environment | not started |
+| 3 | Public dataset harness with disjoint fit/report splits | not started |
+| 4 | LLM structured-output baseline on the same items | not started |
+| 5 | Write-up: coverage at a fixed error budget, with honest limitations | not started |
+
+**Before milestone 2:** read arXiv:2609.30454, *Auditing System-1 Models on
+Biosecurity-Relevant Benchmarks: Calibration, Selective Prediction, and
+Permutation Instability in a Non-Generative Model*. Its title covers all three
+audited axes, so it may be prior art for the whole premise. It was not read
+when this project was scoped — arxiv.org was blocked by the session's network
+egress policy. No novelty may be claimed publicly until it has been read.
+
+**Stop condition.** Stop and write up if the order-sensitivity effect proves
+indistinguishable from zero on the open checkpoint, if arXiv:2609.30454
+already reports it with a stronger method, or if three milestones pass with
+no runnable model environment.
+
+---
+
 ## Week 1 — Presentation
 
 Highest leverage, lowest risk. Nothing here changes settings or history.
