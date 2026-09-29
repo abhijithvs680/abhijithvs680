@@ -29,8 +29,9 @@ project continues it rather than starting something newer.
 
 ### `system1-audit` — audit harness for typed decision models
 
-**Status:** milestone 1 complete and tested locally; **not yet published**.
-**Branch:** `claude/system1-audit-milestone-1` (local only — see blocker).
+**Status:** milestones 1 and 3 complete, tested and pushed for review.
+**Branch:** `claude/confident-wright-rz38h2` (commit `65c3bc4`, 2026-09-29).
+Repository default branch is `system1-audit-milestone-1`.
 
 A dependency-free harness that measures three properties of "System-1" typed
 decision models — models returning a typed, probabilistic answer in one
@@ -45,16 +46,19 @@ Motivated by the open Apache-2.0 Laya README, which self-reports raw ECE of
 temperature fitting, and notes that its `noul` primitive can follow option
 labels rather than state content.
 
-**Blocker.** The repository does not exist and could not be created from an
-agent session: `POST /user/repos` returns `403 Resource not accessible by
-integration`, and the git proxy declines to inject a credential for a
-repository outside the session's authorised set. Both need the account owner.
+**Blocker cleared 2026-09-29.** The repository now exists and is in the
+automation's authorised set; a preflight dry-run push succeeded. The milestone 1
+work that was local-only on 2026-09-28 is published.
+
+**Remaining blocker (milestone 2 only).** No model environment, and the
+arXiv:2609.30454 gate below is still unmet: arxiv.org was refused by the
+session's egress policy again on 2026-09-29.
 
 | # | Milestone | Status |
 |---|---|---|
-| 1 | Dependency-free metric layer; tests validating it against planted defects | done, 55 tests passing, unpublished |
-| 2 | Adapter for an open checkpoint; needs a GPU or patient CPU environment | not started |
-| 3 | Public dataset harness with disjoint fit/report splits | not started |
+| 1 | Dependency-free metric layer; tests validating it against planted defects | done, published |
+| 2 | Adapter for an open checkpoint; needs a GPU or patient CPU environment | blocked — no model environment, arXiv gate unmet |
+| 3 | Disjoint fit/report split discipline, enforced by the library | done, 94 tests passing, pushed for review |
 | 4 | LLM structured-output baseline on the same items | not started |
 | 5 | Write-up: coverage at a fixed error budget, with honest limitations | not started |
 

@@ -8,6 +8,92 @@ private or employer repositories here — this repository is public.
 
 ---
 
+## 2026-09-29 — Milestone 3 of `system1-audit`: disjoint fit/report splits
+
+**Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`
+· **Branch:** `claude/confident-wright-rz38h2` · **Commit:** `65c3bc4`
+
+The repository blocked on 2026-09-28 now exists and is writable from an agent
+session. Preflight passed before any work: origin matched, tree clean, and a
+`git push --dry-run` to a throwaway ref succeeded without a proxy error and
+without creating the ref.
+
+**What was done**
+
+Milestone 3: moved the project's own disjoint-split evaluation rule out of the
+notes and into the library, as `src/system1_audit/splits.py`.
+
+- `deterministic_split` / `split_questions` assign each item to the fit or
+  report side by SHA-256 of its own identifier. Identical across processes, and
+  unchanged when the dataset grows — a shuffle re-draws every assignment when an
+  item is added, invalidating numbers reported against an earlier version of the
+  dataset. Blank or duplicate identifiers are rejected, not collapsed.
+- `held_out_calibration` fits the temperature on the fit side, reports on the
+  report side, and reports the in-sample figure alongside it.
+- `check_disjoint` refuses overlapping identifier sets.
+
+Milestone 2 was not attempted: it needs a model environment, and its roadmap
+gate (read arXiv:2609.30454 first) is still unmet — arxiv.org was refused by
+this environment's egress policy again on 2026-09-29.
+
+**Two results, both measured**
+
+- The in-sample NLL advantage is guaranteed non-negative, because the in-sample
+  temperature minimises NLL over exactly the reported items. The ECE advantage
+  is **not** guaranteed: the fit targets NLL, and ECE is a binned statistic it
+  does not optimise, so the ECE gap changes sign across deciders. The demo
+  prints NLL optimism `+0.0011` and ECE optimism `-0.0152` on one audit.
+- Temperature scaling recovers a planted sharpening proportionally: sharpness
+  1/2/4/8 recovers temperatures 0.7822/1.5643/3.1286/6.2571, a constant ratio
+  of 0.7822. Derivable rather than coincidental, since sharpness and `T` enter
+  the softmax only through `sharpness / T`. The suite asserts the ratio.
+
+Both are properties of the harness and its synthetic decider. Neither is
+evidence about any real model, and no novelty is claimed.
+
+**A correction, not a finding**
+
+`README.md` previously claimed that fitting and reporting a temperature on the
+same items "will understate ECE". Measurement showed that is not reliably true.
+The wording was corrected in both `README.md` and `RESEARCH_NOTES.md`, and the
+argument for disjoint splits now rests on the NLL guarantee. The earlier claim
+is named as corrected rather than quietly replaced.
+
+**Verified before commit**
+
+- 94 tests pass, up from 55, under the command the README documents
+  (`PYTHONPATH=src python3 -m unittest discover -s tests`).
+- A defect in the new tests was caught and fixed before commit: they were first
+  written against `pytest`, which `unittest discover` silently skipped — the
+  documented command reported 55 passing while 38 new tests never ran, and the
+  suite would have gained a third-party dependency in a project whose stated
+  design property is having none. Rewritten in `unittest`.
+- The demo's split section was moved onto a larger generated set. Eight curated
+  items split 5/3, which fitted a temperature on five points and drove it into
+  the search bound. Variants carry distinct state text, because repeating
+  identical states under new identifiers would place the same decision on both
+  sides of the split — the leakage the module exists to prevent.
+- Every figure quoted above and in the notes was re-derived and matched to four
+  decimal places before being written down.
+- Demo output and split assignments are byte-identical under `PYTHONHASHSEED`
+  of 1, 999 and 12345.
+- Diff scanned for credentials, personal, employer and client identifiers, and
+  build artifacts. The only pattern hits were prose false positives
+  ("price-per-token", a "cannot reset password" support-ticket example). Commit
+  author is `Abhijith V S` with a GitHub noreply address.
+
+**Not done**
+
+No pull request, merge, issue, comment, review, discussion, release or tag. No
+repository created, deleted, archived, renamed or transferred. No settings,
+visibility, default branch, security configuration, access or billing changed.
+The default branch `system1-audit-milestone-1` is untouched at `7d2270e`. No
+fork, star, follow, or contact with any third-party maintainer. The
+access-preflight ref was never created. Only the two review branches were
+pushed: `claude/confident-wright-rz38h2` in `system1-audit`, and this one here.
+
+---
+
 ## 2026-09-28 — Research and milestone 1 of `system1-audit`
 
 **Type:** research + new project · **Branch:** `claude/portfolio-management-hub`
