@@ -8,6 +8,105 @@ private or employer repositories here — this repository is public.
 
 ---
 
+## 2026-09-30 — Milestone 6 of `system1-audit`: intervals on every audited quantity
+
+**Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`
+· **Branch:** `claude/confident-wright-rz38h2` · **Commit:** `e82c611`
+
+Preflight passed before any work: origin matched, tree clean, and a
+`git push --dry-run` to a throwaway ref succeeded without a proxy error and
+without creating the ref. A second dry-run for the real branch was run
+immediately before the push.
+
+**Why this milestone**
+
+The project could not reach its own stop condition. H2 is falsified "if the flip
+rate is at chance-level zero and per-position mass sits within sampling noise of
+`1/K`", and the harness reported `mean_flip_rate` and `max_position_deviation`
+as bare point estimates with no uncertainty attached. Added
+`src/system1_audit/significance.py` (670 lines): `Interval`, Wilson and
+Clopper-Pearson binomial intervals, exact binomial tails, a seeded percentile
+bootstrap, an ECE noise floor, and applied layers for the order-sensitivity and
+selective-prediction audits.
+
+**Three results, all measured**
+
+- **The stop condition as written always passes.** Under exact order invariance
+  the flip rate is exactly zero, so one flipped item excludes zero at any `n`:
+  1 of 40 gives `[0.0006, 0.1316]`, 1 of 1000 gives `[0.0000, 0.0056]`, and both
+  "exclude zero" identically. The verdict is now
+  `unstable_rate_exceeds(threshold)`, and H2 is restated in the project notes.
+- **A bootstrap interval for a maximum is not a confidence interval.** An earlier
+  draft of this milestone exposed one for `max_position_deviation`. On an
+  order-*invariant* decider it measured `0.0000 [0.0016, 0.0250]` — the point
+  estimate outside its own bounds, because the maximum of `K` absolute deviations
+  is positively biased under resampling. Tested against zero it would have
+  reported position bias on a model with none. The field was removed; one test
+  keeps it removed and a second reproduces the defect as the reason.
+- **A reported ECE cannot be read without `n` and the bin count.** Binned ECE is
+  positively biased, so a perfectly calibrated model scores above zero. The floor
+  moves from 0.1211 at n=40 to 0.0228 at n=1000 at 10 bins. On the demo's 8
+  items the observed ECE of 0.2374 is *below* the floor's mean of 0.2791
+  (p = 0.583) — the headline calibration figure is entirely explained by binning
+  noise.
+
+**A pre-existing test defect fixed in passing**
+
+The 2026-09-29 entry below records "94 tests pass". From a clean checkout under
+the command the README documents, 2 of those 94 **error**: `test_splits.py`
+builds its subprocess environment from scratch so `PYTHONHASHSEED` is the only
+variable, which also drops `PYTHONPATH`, so the child could import the package
+only where it happened to be pip-installed. Reproduced at clean `HEAD` before
+touching it. The earlier claim was true of that environment and not of a fresh
+checkout. The past entry is left unedited, as this file requires.
+
+**A source discrepancy, recorded rather than resolved**
+
+Re-checking the Laya README on 2026-09-30 read the `laya` English raw mean ECE
+as 0.466, where the 2026-09-28 note in the project recorded 0.213. The post-fit
+figures and the multilingual raw figure matched on both dates. Whether the page
+changed, the earlier reading took a different row, or a summarising fetch erred
+cannot be determined from here. Both readings are recorded in the project notes
+and neither is presented as settled. Nothing depends on which is right: the
+README states neither `n` nor the bin count, which is what makes either number
+unreadable.
+
+**Verified before commit**
+
+- 172 tests pass under the documented command
+  (`PYTHONPATH=src python3 -m unittest discover -s tests`), up from 94 of which
+  2 errored. `python3 -m compileall` clean.
+- Every figure quoted above was re-derived and read off a run, not recalled.
+- Demo output is byte-identical under `PYTHONHASHSEED` of 1, 999 and 12345.
+- The family-wise false positive is reported honestly: with a weak planted bias
+  at n=60 over 8 independent item sets, the sign on the planted position was
+  recovered 8 of 8 times, the verdict fired in only 3, and one of those 3 fired
+  on a different position — the same trial fires with the bias removed, so it is
+  a false positive, not a misattribution.
+- No lint ran: `ruff` is not installed in this environment and the repository
+  carries no lint configuration. Stated rather than implied.
+- Diff scanned for credentials, personal, employer and client identifiers, and
+  build artifacts. The only pattern hits were pre-existing prose false positives
+  ("price-per-token", "off-schema token", a "cannot reset password" support-ticket
+  fixture, and the no-employer-code policy line itself). Commit author is
+  `Abhijith V S` with a GitHub noreply address.
+
+**Not done**
+
+Milestone 2 was not attempted: it needs a model environment, and its gate is
+unmet — arxiv.org refused this session on 2026-09-30 by both a direct request
+and the fetch tool, so arXiv:2609.30454 is still unread and no novelty is
+claimed anywhere. No pull request, merge, issue, comment, review, discussion,
+release or tag. No repository created, deleted, archived, renamed or
+transferred. No settings, visibility, default branch, security configuration,
+access or billing changed. The default branch `system1-audit-milestone-1` is
+untouched at `7d2270e`. No fork, star, follow, or contact with any third-party
+maintainer. The access-preflight refs were never created. Only the two review
+branches were pushed: `claude/confident-wright-rz38h2` in `system1-audit`, and
+this one here.
+
+---
+
 ## 2026-09-29 — Milestone 3 of `system1-audit`: disjoint fit/report splits
 
 **Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`

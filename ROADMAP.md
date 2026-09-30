@@ -29,8 +29,8 @@ project continues it rather than starting something newer.
 
 ### `system1-audit` — audit harness for typed decision models
 
-**Status:** milestones 1 and 3 complete, tested and pushed for review.
-**Branch:** `claude/confident-wright-rz38h2` (commit `65c3bc4`, 2026-09-29).
+**Status:** milestones 1, 3 and 6 complete, tested and pushed for review.
+**Branch:** `claude/confident-wright-rz38h2` (commit `e82c611`, 2026-09-30).
 Repository default branch is `system1-audit-milestone-1`.
 
 A dependency-free harness that measures three properties of "System-1" typed
@@ -40,6 +40,10 @@ forward pass instead of generating text:
 1. calibration, reported raw as well as post-temperature-fit
 2. option-order sensitivity of `choice` answers
 3. selective prediction: coverage at a fixed error budget
+
+and, since milestone 6, an interval on each of them, because the project's own
+falsification criteria are stated in terms of an effect being distinguishable
+from zero and a point estimate cannot answer that.
 
 Motivated by the open Apache-2.0 Laya README, which self-reports raw ECE of
 0.213 (English) and 0.314 (multilingual) falling to 0.081 / 0.106 only after
@@ -52,7 +56,8 @@ work that was local-only on 2026-09-28 is published.
 
 **Remaining blocker (milestone 2 only).** No model environment, and the
 arXiv:2609.30454 gate below is still unmet: arxiv.org was refused by the
-session's egress policy again on 2026-09-29.
+session's egress policy again on 2026-09-30, by both a direct request and the
+fetch tool.
 
 | # | Milestone | Status |
 |---|---|---|
@@ -61,6 +66,7 @@ session's egress policy again on 2026-09-29.
 | 3 | Disjoint fit/report split discipline, enforced by the library | done, 94 tests passing, pushed for review |
 | 4 | LLM structured-output baseline on the same items | not started |
 | 5 | Write-up: coverage at a fixed error budget, with honest limitations | not started |
+| 6 | Significance layer: an interval on every audited quantity, plus an ECE noise floor | done, 172 tests passing, pushed for review |
 
 **Before milestone 2:** read arXiv:2609.30454, *Auditing System-1 Models on
 Biosecurity-Relevant Benchmarks: Calibration, Selective Prediction, and
@@ -73,6 +79,22 @@ egress policy. No novelty may be claimed publicly until it has been read.
 indistinguishable from zero on the open checkpoint, if arXiv:2609.30454
 already reports it with a stronger method, or if three milestones pass with
 no runnable model environment.
+
+**Corrected by milestone 6.** The first clause is not testable as written. Under
+exact order invariance the flip rate is exactly zero, so a single flipped item
+excludes zero at any `n` — the exact interval for 1 item in 40 is
+`[0.0006, 0.1316]`, which excludes zero just as firmly as 1 in 1,000,000 would.
+Read it instead as: stop if the unstable-item rate cannot be put above a stated
+threshold and no per-position deviation clears a family-wise interval. Milestone
+2 should not be run until that threshold is chosen and written down, since
+choosing it after seeing the results is the same defect the disjoint-split rule
+exists to prevent.
+
+**Milestone 2 now also requires** recording `n` and the bin count with any ECE,
+and reporting the noise floor beside it. Milestone 6 measured that floor moving
+from 0.1211 at n=40 to 0.0228 at n=1000 at 10 bins, so an ECE quoted without
+both numbers cannot be compared to anything — including the raw-versus-post-fit
+comparison that motivated this project.
 
 ---
 
