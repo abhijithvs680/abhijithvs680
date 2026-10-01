@@ -8,6 +8,109 @@ private or employer repositories here — this repository is public.
 
 ---
 
+## 2026-10-01 — Milestone 7 of `system1-audit`: pre-registered sample size and exact power
+
+**Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`
+· **Branch:** `claude/confident-wright-r99bed` · **Commit:** `d6fe495`
+
+Preflight passed before any work: origin matched, tree clean, and a
+`git push --dry-run` to a throwaway ref succeeded without a proxy error and
+without creating the ref. A second dry-run for the real branch was run
+immediately before the push. The branch was based on the active project head
+`e82c611`, not on the default branch, so milestones 3 and 6 are carried
+forward rather than dropped.
+
+**Why this milestone**
+
+Milestones 2 and 4 are still blocked, re-tested today: arxiv.org and
+huggingface.co were both refused by this environment's egress policy, no model
+runtime is installed, and no model credentials are available. The next item
+that is actually runnable is the one the roadmap names as a precondition for
+milestone 2 — "milestone 2 should not be run until that threshold is chosen
+and written down". Milestone 6 also left a result it could not explain: an
+interval that fails to exclude the null reads identically whether the effect
+is absent or the sample was too small to see it, and only the first falsifies
+H2. Added `src/system1_audit/prereg.py` (562 lines) and
+`tests/test_prereg.py` (459 lines).
+
+**Four results, all measured**
+
+- **Collecting more items can lose the power the plan registered.** Exact
+  binomial power is not monotone in `n`, because the rejection count is an
+  integer. At a 0.05 threshold and 95% confidence, 33 items need 5 unstable
+  items and reach power 0.8179; 34 items need 6 and fall to 0.7004. A plan
+  that registered 33 and collected 34 would be underpowered by its own
+  criterion with no step having been wrong. `plan_for_rate` now registers
+  `stable_from` — the count beyond which no larger sample in range dips back
+  below the requested power, 39 here — and one test pins the 33/34 pair.
+- **A fixed item budget caps the finding before the audit starts.** Against a
+  0.05 threshold at 95% confidence and 80% power, the smallest resolvable true
+  instability rate is 0.1905 at 40 items, 0.1340 at 100, 0.0926 at 300 and
+  0.0814 at 500.
+- **Milestone 6's unexplained "2 of 8" was a power problem, not a correction
+  problem.** The 2026-09-30 entry below read it as a family-wise false
+  positive. Measured with `empirical_power`: under the null with jitter on,
+  the per-position verdict fired in 1 of 40 simulated audits at 60 items —
+  inside its nominal 5%, so the Bonferroni correction added in milestone 6 is
+  controlling. With `position_weight=0.02` planted it fired 2 of 16 at 60
+  items, 14 of 16 at 150 and 16 of 16 at 300; at `0.05` it fired 20 of 20 at
+  60, 150 and 300. So 150 items is where the weak bias becomes resolvable,
+  which is the number milestone 2 needs for its per-position criterion. The
+  past entry is left unedited, as this file requires; the correction is
+  recorded in the project notes and here.
+- **The demo's own order-sensitivity result does not settle anything.** Read
+  against the plan it should have had, the 8-item demo audit returns
+  `inconclusive_underpowered` at power 0.203, 31 items short of 39. The
+  harness now says that about its own showcase output.
+
+**A pre-existing defect fixed in passing**
+
+`binomial_tail_at_least`, added in milestone 6, raised `OverflowError` for
+`n >= 1030` on correct input: it summed terms with exact integer coefficients
+and `math.comb(1030, 515)` exceeds the largest representable float, so the
+multiplication failed before any arithmetic error could occur. The first call
+of `required_items_for_rate` at the default item cap hit it immediately. The
+tail is now anchored at the largest term in the summation range and walked
+outward with the pmf ratio, the anchor computed through `lgamma`. Verified
+against the integer sum it replaced over 8 sample sizes, 6 probabilities and
+12 cut-points each: largest disagreement 3.3e-13. Two tests pin the regression
+at `n = 1500` and `n = 5000`.
+
+**Verified before commit**
+
+- 212 tests pass under the command the README documents
+  (`PYTHONPATH=src python3 -m unittest discover -s tests`), up from 172. All
+  172 earlier tests still pass against the rewritten tail.
+  `python3 -m compileall` clean.
+- The suite got faster, 13.1s to 7.1s, because the rewritten tail drops terms
+  once they stop moving the sum.
+- Every figure quoted above was read off a run, not recalled.
+- Demo output is byte-identical under `PYTHONHASHSEED` of 1, 999 and 12345.
+- The duality shortcut behind `minimum_unstable_items` is asserted to agree
+  with inverting Clopper-Pearson directly across a grid of 4 sample sizes, 5
+  thresholds and 3 confidence levels, rather than trusted.
+- No lint ran: `ruff` is not installed in this environment and the repository
+  carries no lint configuration. Stated rather than implied.
+- Diff scanned for credentials, personal, employer and client identifiers and
+  build artifacts: no matches at all this time. Commit author is
+  `Abhijith V S` with the GitHub noreply address every prior commit in that
+  repository used.
+
+**Not done**
+
+Milestones 2 and 4 were not attempted; both need a model environment, and
+milestone 2's arXiv gate is still unmet, so arXiv:2609.30454 remains unread
+and no novelty is claimed anywhere. No pull request, merge, issue, comment,
+review, discussion, release or tag. No repository created, deleted, archived,
+renamed or transferred. No settings, visibility, default branch, security
+configuration, access or billing changed. The default branch is untouched at
+`7d2270e`. No fork, star, follow, or contact with any third-party maintainer.
+The access-preflight refs were never created. Only the two review branches
+were pushed: `claude/confident-wright-r99bed` in `system1-audit`, and this one
+here.
+
+---
+
 ## 2026-09-30 — Milestone 6 of `system1-audit`: intervals on every audited quantity
 
 **Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`

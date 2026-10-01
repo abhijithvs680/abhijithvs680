@@ -29,8 +29,9 @@ project continues it rather than starting something newer.
 
 ### `system1-audit` — audit harness for typed decision models
 
-**Status:** milestones 1, 3 and 6 complete, tested and pushed for review.
-**Branch:** `claude/confident-wright-rz38h2` (commit `e82c611`, 2026-09-30).
+**Status:** milestones 1, 3, 6 and 7 complete, tested and pushed for review.
+**Branch:** `claude/confident-wright-r99bed` (commit `d6fe495`, 2026-10-01),
+based on `claude/confident-wright-rz38h2` (`e82c611`, 2026-09-30).
 Repository default branch is `system1-audit-milestone-1`.
 
 A dependency-free harness that measures three properties of "System-1" typed
@@ -54,10 +55,11 @@ labels rather than state content.
 automation's authorised set; a preflight dry-run push succeeded. The milestone 1
 work that was local-only on 2026-09-28 is published.
 
-**Remaining blocker (milestone 2 only).** No model environment, and the
-arXiv:2609.30454 gate below is still unmet: arxiv.org was refused by the
-session's egress policy again on 2026-09-30, by both a direct request and the
-fetch tool.
+**Remaining blocker (milestones 2 and 4).** No model environment, and the
+arXiv:2609.30454 gate below is still unmet. Re-tested 2026-10-01: arxiv.org
+and huggingface.co were both refused by the session's egress policy, no model
+runtime is installed, and no model credentials are available, so no checkpoint
+can be fetched and the LLM baseline cannot be run either.
 
 | # | Milestone | Status |
 |---|---|---|
@@ -67,6 +69,7 @@ fetch tool.
 | 4 | LLM structured-output baseline on the same items | not started |
 | 5 | Write-up: coverage at a fixed error budget, with honest limitations | not started |
 | 6 | Significance layer: an interval on every audited quantity, plus an ECE noise floor | done, 172 tests passing, pushed for review |
+| 7 | Pre-registration and power: threshold and sample size fixed before the run | done, 212 tests passing, pushed for review |
 
 **Before milestone 2:** read arXiv:2609.30454, *Auditing System-1 Models on
 Biosecurity-Relevant Benchmarks: Calibration, Selective Prediction, and
@@ -89,6 +92,16 @@ threshold and no per-position deviation clears a family-wise interval. Milestone
 2 should not be run until that threshold is chosen and written down, since
 choosing it after seeing the results is the same defect the disjoint-split rule
 exists to prevent.
+
+**Milestone 7 settled the sample size milestone 2 was gated on.** The threshold
+is now registered in a `PreregisteredPlan` before the run, and the item counts
+are computed rather than guessed: against a 0.05 unstable-rate threshold at 95%
+confidence and 80% power, 39 items suffice for an assumed rate of 0.20, and a
+budget of 40 items cannot resolve any rate below 0.1905 however the audit comes
+out. For the per-position criterion, measured power says 150 items — a weak
+planted bias (`position_weight=0.02`) resolves in 2 of 16 simulated audits at
+60 items but 14 of 16 at 150. Milestone 2 should register its plan and quote
+the `plan_id` with its results.
 
 **Milestone 2 now also requires** recording `n` and the bin count with any ECE,
 and reporting the noise floor beside it. Milestone 6 measured that floor moving
