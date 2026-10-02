@@ -29,10 +29,11 @@ project continues it rather than starting something newer.
 
 ### `system1-audit` — audit harness for typed decision models
 
-**Status:** milestones 1, 3, 6 and 7 complete, tested and pushed for review.
-**Branch:** `claude/confident-wright-r99bed` (commit `d6fe495`, 2026-10-01),
-based on `claude/confident-wright-rz38h2` (`e82c611`, 2026-09-30).
-Repository default branch is `system1-audit-milestone-1`.
+**Status:** milestones 1, 3, 6, 7 and 8 complete, tested and pushed for review.
+**Branch:** `claude/confident-wright-azzjhj` (commit `d6bb65f`, 2026-10-02),
+based on `claude/confident-wright-r99bed` (`d6fe495`, 2026-10-01).
+Repository default branch is `system1-audit-milestone-1` and is four milestones
+behind the review chain; promoting it is the human's call.
 
 A dependency-free harness that measures three properties of "System-1" typed
 decision models — models returning a typed, probabilistic answer in one
@@ -56,10 +57,18 @@ automation's authorised set; a preflight dry-run push succeeded. The milestone 1
 work that was local-only on 2026-09-28 is published.
 
 **Remaining blocker (milestones 2 and 4).** No model environment, and the
-arXiv:2609.30454 gate below is still unmet. Re-tested 2026-10-01: arxiv.org
-and huggingface.co were both refused by the session's egress policy, no model
-runtime is installed, and no model credentials are available, so no checkpoint
-can be fetched and the LLM baseline cannot be run either.
+arXiv:2609.30454 gate below is still unmet. Re-tested 2026-10-02: arxiv.org was
+refused by the session's egress policy (`CONNECT tunnel failed, response 403`),
+no model runtime is installed (`torch` absent), and no model credentials are
+available, so no checkpoint can be fetched and the LLM baseline cannot be run
+either.
+
+**The stop condition's third clause is now met.** Milestones 6, 7 and 8 all ran
+with no model environment. The project's own rule says to report the harness
+alone and drop the empirical claims. **Recommended next milestone: 5, written up
+as a harness-only report**, unless a model environment becomes available first.
+That is a judgement call about the project's scope, so it is recorded here for
+the human rather than taken unilaterally.
 
 | # | Milestone | Status |
 |---|---|---|
@@ -67,9 +76,10 @@ can be fetched and the LLM baseline cannot be run either.
 | 2 | Adapter for an open checkpoint; needs a GPU or patient CPU environment | blocked — no model environment, arXiv gate unmet |
 | 3 | Disjoint fit/report split discipline, enforced by the library | done, 94 tests passing, pushed for review |
 | 4 | LLM structured-output baseline on the same items | not started |
-| 5 | Write-up: coverage at a fixed error budget, with honest limitations | not started |
+| 5 | Write-up: coverage at a fixed error budget, with honest limitations | not started — now the recommended next milestone, as a harness-only report |
 | 6 | Significance layer: an interval on every audited quantity, plus an ECE noise floor | done, 172 tests passing, pushed for review |
 | 7 | Pre-registration and power: threshold and sample size fixed before the run | done, 212 tests passing, pushed for review |
+| 8 | Vote aggregation priced per forward pass, with a paired interval on the gain | done, 237 tests passing, pushed for review |
 
 **Before milestone 2:** read arXiv:2609.30454, *Auditing System-1 Models on
 Biosecurity-Relevant Benchmarks: Calibration, Selective Prediction, and
@@ -108,6 +118,23 @@ and reporting the noise floor beside it. Milestone 6 measured that floor moving
 from 0.1211 at n=40 to 0.0228 at n=1000 at 10 bins, so an ECE quoted without
 both numbers cannot be compared to anything — including the raw-versus-post-fit
 comparison that motivated this project.
+
+**Milestone 8 answered half of H3 and closed the other half off.** The usable
+aggregation is probability averaging, never the vote share: over 150 items at a
+10% error budget a majority vote held accuracy unchanged and took coverage from
+0.2800 to 0.0000, because its confidence collapsed to one distinct value and no
+threshold could select a low-error subset. The remaining half of H3 — that
+voting beats *moving to a larger model* per unit latency — cannot be settled by
+this harness, because coverage-per-pass is bounded by `1 / passes` and a
+comparison needs the larger model's own number. Milestone 2 should report
+threshold-feasible coverage, not the risk-coverage curve's figure, which can
+stop inside a group of tied confidences and so cannot be implemented by any
+cutoff.
+
+**The Laya ECE discrepancy recorded on 2026-09-30 is resolved** and needs no
+further work: the raw README was retrieved directly on 2026-10-02 and both
+earlier readings were correct, in different sections describing different
+evaluation sets. The correction was to the project's own notes.
 
 ---
 

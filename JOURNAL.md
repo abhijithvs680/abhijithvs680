@@ -8,6 +8,113 @@ private or employer repositories here — this repository is public.
 
 ---
 
+## 2026-10-02 — Milestone 8 of `system1-audit`: voting priced per forward pass
+
+**Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`
+· **Branch:** `claude/confident-wright-azzjhj` · **Commit:** `d6bb65f`
+
+Preflight passed before any work: origin matched, tree clean, and a
+`git push --dry-run` to a throwaway ref succeeded without a proxy error and
+without creating the ref. A second dry-run for the real branch ran immediately
+before the push. The branch was based on the active project head `d6fe495`, not
+on the default branch, so milestones 3, 6 and 7 are carried forward rather than
+dropped. `claude/confident-wright-azzjhj` did not exist on the remote, so the
+push created it and no published history was touched.
+
+**Why this milestone**
+
+Milestones 2 and 4 are still blocked, re-tested today: arxiv.org was refused by
+this environment's egress policy (`CONNECT tunnel failed, response 403`), no
+model runtime is installed (`torch` absent), and no model credentials are
+available. The runnable item was the half of H3 that needs no model. The
+permutation audit already reported vote accuracy beside single-pass accuracy,
+which compares the quantity H3 explicitly rejects — accuracy rather than
+coverage at a fixed error budget — and charged the vote nothing for the eight
+forward passes it used. Added `src/system1_audit/voting.py` (399 lines) and
+`tests/test_voting.py` (314 lines).
+
+**Three results, all measured**
+
+- **A vote share is not a usable abstention gate, and this is a negative
+  result.** Against a planted position bias, over 150 items at a 10% error
+  budget, majority voting held accuracy at exactly 0.2533 and took coverage
+  from 0.2800 to 0.0000 — paired gain `-0.2800 [-0.3600, -0.2000]`, excluding
+  zero on the downside — for eight forward passes per item. The vote share
+  collapsed to a single distinct value across all 150 items, so no threshold
+  could select a lower-error subset. Accuracy is blind to this because accuracy
+  never consults the confidence. Averaging the probability vectors instead
+  keeps 150 distinct values and keeps the gate.
+- **The risk-coverage curve reports coverage no real threshold can deliver.**
+  The curve walks one item at a time, so its answer can stop inside a group of
+  equally confident items; a deployed cutoff answers every item at or above it.
+  Where the curve claimed 0.0067, the implementable coverage was 0.0000,
+  because all 150 items tied. `threshold_feasible_coverage` reports the
+  implementable number and a test asserts it never exceeds the curve's.
+- **Coverage per pass has a ceiling that disqualifies it as a verdict.**
+  Coverage cannot exceed 1.0, so the ratio cannot exceed `1 / passes`, and a
+  one-pass baseline above `1/K` wins by construction. The docstring states the
+  ceiling and a test asserts it. This is the honest limit on what the milestone
+  settles: pricing voting against a *larger model* needs that model, so only
+  the within-model question is answered.
+
+**Two defects found by the harness's own no-op test, both fixed**
+
+Voting on an order-invariant model must be an exact no-op, since every pass is
+one call repeated. Comparing confidences bitwise missed that, because averaging
+`K` bitwise-identical floats does not return that float — the mean of six
+copies of `0.7` is `0.7000000000000001`. And a zero-width interval at zero was
+labelled "unresolved", which claims the sample was too small to answer a
+question it had answered exactly; that case is now reported separately. Both
+have tests that reproduce the reason, not just the fix.
+
+**Stated as a limitation, not buried**
+
+The aggregation numbers come from the synthetic deciders, whose defects are of
+exactly the kind averaging cancels by construction: the jitter is drawn per
+display order and the position term sits on one display slot. That probability
+averaging reaches accuracy 1.0 on those fixtures is a property of the fixture,
+not a prediction about any model. The README and the research notes say so
+where the numbers appear.
+
+**A primary-source re-check that resolved an open item**
+
+`raw.githubusercontent.com` was reachable today, so the Laya README was
+retrieved as the raw file (100,070 bytes) rather than through a summarising
+fetch. That settles the discrepancy the milestone 6 entry recorded and could
+not resolve: the raw-ECE readings of 0.213 and 0.466 were **both correct** and
+sit in different sections describing different evaluation sets, alongside
+0.175, 0.246, 0.144 and a multilingual 0.733. The correction that follows is to
+this project's own notes, which had attributed 0.213 to the wrong checkpoint
+row, not to the README. Three of the six figures state no sample size and none
+states a bin count, which is the milestone 6 point now evidenced from the
+primary source.
+
+**Stop condition**
+
+Milestones 6, 7 and 8 have now all run with no model environment, which meets
+the third clause of the project's stop condition. The notes now recommend
+milestone 5 be written up as a harness-only report with the empirical H1/H2/H3
+claims dropped, unless a model environment becomes available first. No novelty
+is claimed anywhere: arXiv:2609.30454 remains unread.
+
+**Verification**
+
+237 tests pass, up from 212, run from a clean detached worktree of the
+committed tree under the command the README documents
+(`PYTHONPATH=src python3 -m unittest discover -s tests`); `examples/demo.py`
+exits 0. The 212-test baseline was confirmed from the same clean checkout
+before the change. No linter is configured in that repository. The diff was
+scanned for credentials, employer or client material, and generated junk: none
+present.
+
+**Not done**
+
+No pull request, no merge, no tag, no release, no settings or visibility
+change, no default-branch change. Nothing outside `system1-audit` and this hub
+branch was modified. No external or third-party repository was contacted.
+
+---
+
 ## 2026-10-01 — Milestone 7 of `system1-audit`: pre-registered sample size and exact power
 
 **Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`
