@@ -29,10 +29,10 @@ project continues it rather than starting something newer.
 
 ### `system1-audit` — audit harness for typed decision models
 
-**Status:** milestones 1, 3, 6, 7 and 8 complete, tested and pushed for review.
-**Branch:** `claude/confident-wright-azzjhj` (commit `d6bb65f`, 2026-10-02),
-based on `claude/confident-wright-r99bed` (`d6fe495`, 2026-10-01).
-Repository default branch is `system1-audit-milestone-1` and is four milestones
+**Status:** milestones 1, 3, 6, 7, 8 and 9 complete, tested and pushed for review.
+**Branch:** `claude/confident-wright-383ue1` (commit `7c2d0eb`, 2026-10-03),
+based on `claude/confident-wright-azzjhj` (`d6bb65f`, 2026-10-02).
+Repository default branch is `system1-audit-milestone-1` and is five milestones
 behind the review chain; promoting it is the human's call.
 
 A dependency-free harness that measures three properties of "System-1" typed
@@ -57,18 +57,32 @@ automation's authorised set; a preflight dry-run push succeeded. The milestone 1
 work that was local-only on 2026-09-28 is published.
 
 **Remaining blocker (milestones 2 and 4).** No model environment, and the
-arXiv:2609.30454 gate below is still unmet. Re-tested 2026-10-02: arxiv.org was
+arXiv:2609.30454 gate below is still unmet. Re-tested 2026-10-03, unchanged: arxiv.org was
 refused by the session's egress policy (`CONNECT tunnel failed, response 403`),
 no model runtime is installed (`torch` absent), and no model credentials are
 available, so no checkpoint can be fetched and the LLM baseline cannot be run
 either.
 
-**The stop condition's third clause is now met.** Milestones 6, 7 and 8 all ran
-with no model environment. The project's own rule says to report the harness
-alone and drop the empirical claims. **Recommended next milestone: 5, written up
-as a harness-only report**, unless a model environment becomes available first.
-That is a judgement call about the project's scope, so it is recorded here for
-the human rather than taken unilaterally.
+**The stop condition's third clause is met, and four milestones have now run
+with no model environment** (6, 7, 8, 9). The project's own rule says to report
+the harness alone and drop the empirical claims. **Recommended next milestone: 5,
+written up as a harness-only report**, unless a model environment becomes
+available first. That is a judgement call about the project's scope, so it is
+recorded here for the human rather than taken unilaterally.
+
+**Milestone 9 was taken ahead of 5 on 2026-10-03, and the reason matters for
+whoever writes 5.** Milestone 5 reports "coverage at a fixed error budget", and
+the library was returning the wrong quantity for it: a curve-prefix coverage no
+confidence cutoff can deliver, plus a threshold that could breach the budget it
+was given (realised risk 0.333 against a budget of 0.0 on a tied fixture). The
+write-up would have documented the defect. Milestone 5 should now quote
+`operating_point` / `feasible_coverage_at_risk`, not `coverage_at_risk`, and
+should carry the measured gap — 60 items over 4 distinct confidence values at a
+10 percent budget, bound 0.5500 against an achievable 0.4167 — as the reason the
+distinction is reported at all. Milestone 9 also found that the gap is not a
+vote-share-only concern: any bootstrap resamples with replacement and so creates
+ties, which is why `selective_coverage_interval` had to change even though the
+demo's confidences are all distinct.
 
 | # | Milestone | Status |
 |---|---|---|
@@ -80,6 +94,7 @@ the human rather than taken unilaterally.
 | 6 | Significance layer: an interval on every audited quantity, plus an ECE noise floor | done, 172 tests passing, pushed for review |
 | 7 | Pre-registration and power: threshold and sample size fixed before the run | done, 212 tests passing, pushed for review |
 | 8 | Vote aggregation priced per forward pass, with a paired interval on the gain | done, 237 tests passing, pushed for review |
+| 9 | A selective-prediction operating point a real cutoff can deliver | done, 250 tests passing, pushed for review |
 
 **Before milestone 2:** read arXiv:2609.30454, *Auditing System-1 Models on
 Biosecurity-Relevant Benchmarks: Calibration, Selective Prediction, and

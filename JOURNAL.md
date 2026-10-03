@@ -8,6 +8,104 @@ private or employer repositories here — this repository is public.
 
 ---
 
+## 2026-10-03 — Milestone 9 of `system1-audit`: an operating point a cutoff can deliver
+
+**Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`
+· **Branch:** `claude/confident-wright-383ue1` · **Commit:** `7c2d0eb`
+
+Preflight passed before any work: origin matched the intended repository, the
+tree was clean, and a `git push --dry-run` to a throwaway ref succeeded without
+a proxy error and without creating the ref. A second dry-run for the real branch
+ran immediately before the push. The branch was based on the active project head
+`d6bb65f`, not on the default branch, so milestones 3, 6, 7 and 8 are carried
+forward. The branch did not exist on the remote, so the push created it; the
+milestone 1 commit is an ancestor of it, so nothing published was rewritten and
+no force-push was used.
+
+**Why this milestone**
+
+Milestones 2 and 4 are still blocked, re-tested today: arxiv.org refused by this
+environment's egress policy (`CONNECT tunnel failed, response 403`), `torch` and
+`transformers` both absent, no model credentials present. The recommended next
+step on the roadmap was milestone 5, the write-up of "coverage at a fixed error
+budget" — but the quantity that write-up would report was not the one the library
+returned, so the write-up would have documented a defect. Milestone 8 had found
+that a risk-coverage curve point can stop inside a group of equally confident
+items, which no cutoff can reproduce, and had fixed it only in `voting.py`. The
+selective-prediction module itself still answered with the curve prefix, and that
+is what the README quickstart, the demo and `selective_coverage_interval` called.
+
+**Two defects, both reproduced before being fixed**
+
+- **A reported threshold could breach the budget it was given.** `coverage_at_risk`
+  and `threshold_at_risk` were independent maximisations over the same curve, so
+  the pair described an operating point that does not exist. On confidences
+  `[0.9, 0.9, 0.9, 0.5]` with the third item wrong, at a **zero** error budget,
+  `threshold_at_risk` returned `0.9`; that cutoff answers three items and carries
+  a realised error rate of **0.333**, while the largest coverage any cutoff
+  achieves at that budget is 0.0. The number was reported as within budget while
+  breaching it, which for a guardrail layer is the wrong direction to be wrong in.
+- **The interval bounded an unachievable quantity, and distinct confidences did
+  not excuse it.** This was the non-obvious half. The tie correction looks
+  irrelevant when every observed confidence differs, which is the normal case for
+  a probability output. It is not, for any resampled quantity: the bootstrap draws
+  with replacement, so ties appear in nearly every resample, and on each one the
+  prefix statistic can return coverage no cutoff could deliver.
+  `selective_coverage_interval` now resamples the feasible quantity.
+
+**What changed**
+
+`operating_point` returns a threshold together with the coverage and error rate
+it realises, consistent by construction and selected on realised risk;
+`feasible_coverage_at_risk` is the coverage alone; `coverage_at_risk` is kept and
+documented as a bound, which is the right answer to "can any cutoff beat this"
+and the wrong answer to "where do I set the threshold". The reachable points turn
+out to be identifiable from the curve alone — it is sorted by descending
+confidence, so the last point of each tie group is exactly the state of a cutoff
+set there — which also makes the free function O(n log n) rather than milestone
+8's O(n²) threshold scan, and moves it beside the curve it derives from,
+re-exported from `voting.py` so existing callers keep working.
+
+**Measured, not asserted**
+
+60 items over 4 distinct confidence values, as a coarse score or a vote share
+produces, at a 10 percent error budget: the curve bound is 0.5500 and the best
+any cutoff achieves is 0.4167. The interval's point estimate was the first number
+and is now the second. The demo's own profile has distinct confidences and is
+unchanged, which is the expected result and the reason a synthetic tied fixture
+carries the test.
+
+**Limitations, stated in the repository too**
+
+Both findings are properties of the harness, established on constructed inputs
+with hand-computed answers and on property checks over randomised tie patterns.
+Neither is a measurement of any model. The tied case is reached by real systems —
+a vote share over K passes takes at most K+1 values — but how often it binds on a
+System-1 checkpoint is unmeasured, because no checkpoint has been audited. One
+bias in `selective_coverage_interval` is fixed and one is not: the in-sample
+maximisation remains, and the README says so.
+
+**Verification**
+
+250 tests pass, up from 237, run from a clean detached worktree of the committed
+tree under the command the README documents
+(`PYTHONPATH=src python3 -m unittest discover -s tests`); `examples/demo.py`
+exits 0. The repository configures no linter, but `ruff` and `mypy` are available
+in this environment and were run against both the base commit and the result:
+identical findings on each (5 ruff, 3 mypy, all pre-existing and outside this
+change), so nothing new was introduced and nothing pre-existing was swept up. The
+diff was scanned for credentials, private or employer material and generated
+junk: none present.
+
+**Not done**
+
+No pull request, no merge, no tag, no release, no settings, visibility,
+default-branch or access change. No novelty is claimed anywhere:
+arXiv:2609.30454 remains unread. Nothing outside `system1-audit` and this hub
+branch was modified, and no external or third-party repository was contacted.
+
+---
+
 ## 2026-10-02 — Milestone 8 of `system1-audit`: voting priced per forward pass
 
 **Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`
