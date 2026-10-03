@@ -24,132 +24,90 @@ in review, done.
 
 ## Active research project
 
-Read this section first. A run that finds an unfinished active research
-project continues it rather than starting something newer.
+**None. `system1-audit` is closed as of 2026-10-03.** The next run starts a new
+research project — see "Starting the next project" below.
 
-### `system1-audit` — audit harness for typed decision models
+### `system1-audit` — closed 2026-10-03
 
-**Status:** milestones 1, 3, 6, 7, 8 and 9 complete, tested and pushed for review.
-**Branch:** `claude/confident-wright-383ue1` (commit `7c2d0eb`, 2026-10-03),
-based on `claude/confident-wright-azzjhj` (`d6bb65f`, 2026-10-02).
-Repository default branch is `system1-audit-milestone-1` and is five milestones
-behind the review chain; promoting it is the human's call.
+**Final state.** Milestones 1, 3, 5, 6, 7, 8 and 9 complete, tested and pushed
+for review on `claude/confident-wright-383ue1` (commit `da7c5cc`). Milestones 2
+and 4 closed **blocked and unstarted**.
 
-A dependency-free harness that measures three properties of "System-1" typed
-decision models — models returning a typed, probabilistic answer in one
-forward pass instead of generating text:
+A dependency-free audit harness for "System-1" typed decision models — models
+returning a typed, probabilistic answer in one forward pass instead of generating
+text — measuring calibration, option-order sensitivity, and selective prediction,
+with an interval on every audited quantity, a noise floor beside every ECE, a
+pre-registered sample size and threshold, aggregation priced per forward pass, and
+a selective-prediction operating point a deployment can actually set.
 
-1. calibration, reported raw as well as post-temperature-fit
-2. option-order sensitivity of `choice` answers
-3. selective prediction: coverage at a fixed error budget
+**It never audited a model, and claims no novelty.** Both are gates that never
+opened: no model runtime (`torch` absent), no model credentials, and
+arXiv:2609.30454 — whose title covers all three audited axes, so it is potential
+prior art for the whole premise — was refused by this environment's egress policy
+on all five attempts (2026-09-29, 09-30, 10-01, 10-02, 10-03). `REPORT.md` is the
+harness-only write-up, which is the project's own stop condition being honoured.
 
-and, since milestone 6, an interval on each of them, because the project's own
-falsification criteria are stated in terms of an effect being distinguishable
-from zero and a point estimate cannot answer that.
-
-Motivated by the open Apache-2.0 Laya README, which self-reports raw ECE of
-0.213 (English) and 0.314 (multilingual) falling to 0.081 / 0.106 only after
-temperature fitting, and notes that its `noul` primitive can follow option
-labels rather than state content.
-
-**Blocker cleared 2026-09-29.** The repository now exists and is in the
-automation's authorised set; a preflight dry-run push succeeded. The milestone 1
-work that was local-only on 2026-09-28 is published.
-
-**Remaining blocker (milestones 2 and 4).** No model environment, and the
-arXiv:2609.30454 gate below is still unmet. Re-tested 2026-10-03, unchanged: arxiv.org was
-refused by the session's egress policy (`CONNECT tunnel failed, response 403`),
-no model runtime is installed (`torch` absent), and no model credentials are
-available, so no checkpoint can be fetched and the LLM baseline cannot be run
-either.
-
-**The stop condition's third clause is met, and four milestones have now run
-with no model environment** (6, 7, 8, 9). The project's own rule says to report
-the harness alone and drop the empirical claims. **Recommended next milestone: 5,
-written up as a harness-only report**, unless a model environment becomes
-available first. That is a judgement call about the project's scope, so it is
-recorded here for the human rather than taken unilaterally.
-
-**Milestone 9 was taken ahead of 5 on 2026-10-03, and the reason matters for
-whoever writes 5.** Milestone 5 reports "coverage at a fixed error budget", and
-the library was returning the wrong quantity for it: a curve-prefix coverage no
-confidence cutoff can deliver, plus a threshold that could breach the budget it
-was given (realised risk 0.333 against a budget of 0.0 on a tied fixture). The
-write-up would have documented the defect. Milestone 5 should now quote
-`operating_point` / `feasible_coverage_at_risk`, not `coverage_at_risk`, and
-should carry the measured gap — 60 items over 4 distinct confidence values at a
-10 percent budget, bound 0.5500 against an achievable 0.4167 — as the reason the
-distinction is reported at all. Milestone 9 also found that the gap is not a
-vote-share-only concern: any bootstrap resamples with replacement and so creates
-ties, which is why `selective_coverage_interval` had to change even though the
-demo's confidences are all distinct.
-
-| # | Milestone | Status |
+| # | Milestone | Final status |
 |---|---|---|
-| 1 | Dependency-free metric layer; tests validating it against planted defects | done, published |
-| 2 | Adapter for an open checkpoint; needs a GPU or patient CPU environment | blocked — no model environment, arXiv gate unmet |
-| 3 | Disjoint fit/report split discipline, enforced by the library | done, 94 tests passing, pushed for review |
-| 4 | LLM structured-output baseline on the same items | not started |
-| 5 | Write-up: coverage at a fixed error budget, with honest limitations | not started — now the recommended next milestone, as a harness-only report |
-| 6 | Significance layer: an interval on every audited quantity, plus an ECE noise floor | done, 172 tests passing, pushed for review |
-| 7 | Pre-registration and power: threshold and sample size fixed before the run | done, 212 tests passing, pushed for review |
-| 8 | Vote aggregation priced per forward pass, with a paired interval on the gain | done, 237 tests passing, pushed for review |
-| 9 | A selective-prediction operating point a real cutoff can deliver | done, 250 tests passing, pushed for review |
+| 1 | Dependency-free metric layer; tests validating it against planted defects | done |
+| 2 | Adapter for an open checkpoint | **closed, blocked** — no model environment, arXiv gate unmet |
+| 3 | Disjoint fit/report split discipline, enforced by the library | done |
+| 4 | LLM structured-output baseline on the same items | **closed, blocked** — no credentials |
+| 5 | Write-up: coverage at a fixed error budget, with honest limitations | done — `REPORT.md` |
+| 6 | Significance layer: an interval on every audited quantity, plus an ECE noise floor | done |
+| 7 | Pre-registration and power: threshold and sample size fixed before the run | done |
+| 8 | Vote aggregation priced per forward pass, with a paired interval on the gain | done, **headline later withdrawn** (see below) |
+| 9 | A selective-prediction operating point a real cutoff can deliver | done |
 
-**Before milestone 2:** read arXiv:2609.30454, *Auditing System-1 Models on
-Biosecurity-Relevant Benchmarks: Calibration, Selective Prediction, and
-Permutation Instability in a Non-Generative Model*. Its title covers all three
-audited axes, so it may be prior art for the whole premise. It was not read
-when this project was scoped — arxiv.org was blocked by the session's network
-egress policy. No novelty may be claimed publicly until it has been read.
+**To resume the empirical work** (not scheduled; listed so the conditions are not
+lost): read arXiv:2609.30454 first, since it gates any novelty claim — needs
+network access to arxiv.org. Then milestone 2 needs a GPU or patient CPU with
+`torch` and `transformers` plus the Apache-2.0 Laya weights, must register a plan
+and quote its `plan_id`, and must report `n` and the bin count with any ECE.
+Milestone 4 needs credentials for one provider. `REPORT.md` section 6 has the
+detail.
 
-**Stop condition.** Stop and write up if the order-sensitivity effect proves
-indistinguishable from zero on the open checkpoint, if arXiv:2609.30454
-already reports it with a stronger method, or if three milestones pass with
-no runnable model environment.
+**Two self-corrections worth carrying forward as method, not just history.**
+Milestone 9 found the harness was reporting a confidence threshold as meeting a
+zero-error budget while it carried 0.333 realised error — an operating point that
+did not exist, because a risk-coverage curve point can stop inside a group of tied
+confidences and no cutoff can. Milestone 5 then withdrew milestone 8's headline
+("a vote share is not a usable abstention gate"), which had generalised from one
+fixture; across three fixtures the vote improves coverage on two. Both were caught
+by making the claim reproducible rather than by re-reading it: the second surfaced
+only because the report was written to quote a script
+(`examples/report_numbers.py`) instead of transcribed numbers. **Write the figures
+as a regenerable script from the start on the next project.**
 
-**Corrected by milestone 6.** The first clause is not testable as written. Under
-exact order invariance the flip rate is exactly zero, so a single flipped item
-excludes zero at any `n` — the exact interval for 1 item in 40 is
-`[0.0006, 0.1316]`, which excludes zero just as firmly as 1 in 1,000,000 would.
-Read it instead as: stop if the unstable-item rate cannot be put above a stated
-threshold and no per-position deviation clears a family-wise interval. Milestone
-2 should not be run until that threshold is chosen and written down, since
-choosing it after seeing the results is the same defect the disjoint-split rule
-exists to prevent.
+**Outstanding for the human on this repository**, carried from the two 2026-10-03
+journal entries: the default branch is still `system1-audit-milestone-1`, six
+milestones behind the review chain. Promoting it, and merging the review branch,
+are settings and merge decisions and are the human's alone.
 
-**Milestone 7 settled the sample size milestone 2 was gated on.** The threshold
-is now registered in a `PreregisteredPlan` before the run, and the item counts
-are computed rather than guessed: against a 0.05 unstable-rate threshold at 95%
-confidence and 80% power, 39 items suffice for an assumed rate of 0.20, and a
-budget of 40 items cannot resolve any rate below 0.1905 however the audit comes
-out. For the per-position criterion, measured power says 150 items — a weak
-planted bias (`position_weight=0.02`) resolves in 2 of 16 simulated audits at
-60 items but 14 of 16 at 150. Milestone 2 should register its plan and quote
-the `plan_id` with its results.
+---
 
-**Milestone 2 now also requires** recording `n` and the bin count with any ECE,
-and reporting the noise floor beside it. Milestone 6 measured that floor moving
-from 0.1211 at n=40 to 0.0228 at n=1000 at 10 bins, so an ECE quoted without
-both numbers cannot be compared to anything — including the raw-versus-post-fit
-comparison that motivated this project.
+## Starting the next project
 
-**Milestone 8 answered half of H3 and closed the other half off.** The usable
-aggregation is probability averaging, never the vote share: over 150 items at a
-10% error budget a majority vote held accuracy unchanged and took coverage from
-0.2800 to 0.0000, because its confidence collapsed to one distinct value and no
-threshold could select a low-error subset. The remaining half of H3 — that
-voting beats *moving to a larger model* per unit latency — cannot be settled by
-this harness, because coverage-per-pass is bounded by `1 / passes` and a
-comparison needs the larger model's own number. Milestone 2 should report
-threshold-feasible coverage, not the risk-coverage curve's figure, which can
-stop inside a group of tied confidences and so cannot be implemented by any
-cutoff.
+The human's instruction on 2026-10-03: from the next run onward, research and
+select a new, most-relevant task rather than continuing or reviving old work.
 
-**The Laya ECE discrepancy recorded on 2026-09-30 is resolved** and needs no
-further work: the raw README was retrieved directly on 2026-10-02 and both
-earlier readings were correct, in different sections describing different
-evaluation sets. The correction was to the project's own notes.
+Constraints that apply to the choice, from `CLAUDE.md` and the standing routine:
+
+- Verify current primary sources before proposing anything. Record source dates
+  and links; distinguish evidence from marketing.
+- Define a falsifiable question and a stop condition **before** building, and
+  check licences and prior art. An unread prior-art candidate means no novelty
+  claim — that is the lesson `system1-audit` paid for.
+- **Check the execution environment's limits against the hypothesis before
+  committing to it.** `system1-audit` spent nine milestones on a question it could
+  not answer here, because the harness was buildable offline and the audit was
+  not. Prefer a question this environment can actually settle, or scope the
+  deliverable to what it can.
+- Write every quantitative claim as a regenerable script with a test, from the
+  first milestone.
+- A new repository is **not** authorised by this file. Prepare it locally, then
+  ask: it must be added to the routine's repository set before any later run can
+  push to it.
 
 ---
 

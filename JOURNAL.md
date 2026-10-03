@@ -8,6 +8,102 @@ private or employer repositories here — this repository is public.
 
 ---
 
+## 2026-10-03 — Milestone 5 of `system1-audit`, and the project closed
+
+**Type:** research project (closed) · **Repository:** `abhijithvs680/system1-audit`
+· **Branch:** `claude/confident-wright-383ue1` · **Commit:** `da7c5cc`
+
+Second block of the day, on the same branch as milestone 9, at the human's
+instruction to finish the project's pending work and close it. Preflight had
+already passed for this repository and branch earlier in the session; a dry-run
+push ran again immediately before this push, and it was a fast-forward
+(`7c2d0eb..da7c5cc`), so no published history was touched.
+
+**What was pending, and what was actually possible**
+
+Three milestones were open. Two of them remain impossible rather than merely
+undone, re-tested today: arxiv.org refused by this environment's egress policy
+(`CONNECT tunnel failed, response 403`), `torch` and `transformers` both absent,
+no model credentials. So milestone 2 (adapter for an open checkpoint) and
+milestone 4 (LLM structured-output baseline) are closed **blocked and unstarted**,
+with their exact resume conditions written into the report rather than lost.
+Milestone 5, the write-up, was the one actionable item and is done.
+
+**The report quotes a script instead of prose**
+
+`REPORT.md` is a harness-only report: every empirical H1/H2/H3 claim is dropped,
+which is the project's own stop condition being honoured rather than worked
+around — it named three milestones without a model environment and five have now
+run. `examples/report_numbers.py` regenerates every figure in it, and
+`tests/test_report_numbers.py` asserts the script still runs and that its output
+is byte-identical across runs and across `PYTHONHASHSEED` values. Every
+four-decimal figure in the report was then cross-checked against the script's
+actual output programmatically; the three that do not come from it are attributed
+in the report where they appear.
+
+Writing it that way earned its keep immediately: it caught two corrections that
+transcription would have carried forward silently.
+
+**Correction 1 — this project's own milestone 8 headline is withdrawn**
+
+Milestone 8 recorded "a vote share is not a usable abstention gate" as a negative
+result. It generalised from a single fixture. Regenerated across three fixtures
+differing only in planted skill, the vote *improves* both accuracy and coverage
+on two of them. The directional claim does not survive.
+
+What survives is structural and fixture-independent: a modal vote over K display
+orders takes at most K+1 distinct confidence values, and at one distinct value the
+gate is all-or-nothing — the only available cutoff answers everything, so feasible
+coverage is 1.0 if the whole set is inside the budget and 0.0 otherwise, never
+anything between. Both outcomes now appear in the report, on fixtures that differ
+only in planted skill.
+
+Milestone 8's sharpest point survives intact in the first fixture, and it is the
+report's central argument: the vote holds accuracy at *exactly* the single-pass
+0.2533 and takes feasible coverage to 0.0000, for eight forward passes per item.
+Accuracy is blind to it because accuracy never consults the confidence. That is
+why H3 framed the operational question on coverage rather than accuracy.
+
+**Correction 2 — milestone 3's temperature figures do not reproduce**
+
+The milestone 3 note records planted sharpness 1/2/4/8 recovering temperatures at
+a constant ratio of 0.7822. On a 200-item set today the ratio is 0.0353. The
+constant depends on the item set, so it was never a figure worth quoting — the
+proportionality is the property, and that is what the test suite asserts, so no
+test was wrong. Separately the sharpness=1 row was not a fitted value at all: it
+returns `fit_temperature`'s documented lower bound of 0.0500. A third figure, an
+interval's upper bound, regenerates as 0.0266 against the milestone 6 note's
+0.0250; the original run's seed is not recorded, so it is not reconcilable, and
+both are stated with the reproducible one quoted.
+
+**Verification**
+
+255 tests pass, up from 250, run from a clean detached worktree of the committed
+tree under the command the README documents; `examples/demo.py` and
+`examples/report_numbers.py` both exit 0 from that same clean checkout. `ruff` and
+`mypy` report the same 5 and 3 pre-existing findings as before and no new ones —
+one new ruff finding was introduced mid-work (an unused import) and removed before
+committing. The diff was scanned for credentials, private or employer material and
+generated junk: none present.
+
+**What the project produced, stated honestly**
+
+A dependency-free audit harness for typed decision models, with the statistical
+discipline wired into the library rather than left to the caller. It never audited
+a model. No novelty is claimed anywhere, because arXiv:2609.30454 — whose title
+covers all three audited axes — was unreadable from this environment on all five
+attempts. The one-line summary in the report is that the harness is ready and the
+audit never ran.
+
+**Not done**
+
+No pull request, no merge, no tag, no release, no settings, visibility,
+default-branch or access change. The repository default branch remains
+`system1-audit-milestone-1`, now six milestones behind the review chain; promoting
+it is still the human's call and is listed below as outstanding.
+
+---
+
 ## 2026-10-03 — Milestone 9 of `system1-audit`: an operating point a cutoff can deliver
 
 **Type:** research project (active) · **Repository:** `abhijithvs680/system1-audit`
